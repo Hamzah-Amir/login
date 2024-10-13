@@ -1,50 +1,52 @@
-user = {}
 
+# Defining Signup System Logic 
 def signup():
     username = input("Enter your name: ").lower()
-    if username in user:
-        print("The username already exist!")
-        return
-
     password = input("Enter your password: ").lower()
     
-    print("Signup successfull") 
-    user[username] = password
-
-
+    with open("user data.txt") as f:
+        verify = f.readlines()
+    for lines in verify:
+        user_in_file,password_in_file = lines.strip().split(", ")   
+        if user_in_file == username:
+            print("Username already exist!")
+            return
+            
+    print("Signup Successful!")
+    with open("user data.txt", "a") as f:    # Writing the data in a file to save it in database
+        f.write(f"{username}, {password} \n")
+    
+# Defining Login System Logic
 def login():
     username = input("Enter your name: ").lower()
-    if username not in user:
-        print("User does not exist!")
-        return
-
     password = input("Enter your password: ").lower()
-    if user[username] != password:
-        print("Invalid password")
-    else:
-        print("Login Successful")
-
-
+    
+    with open("user data.txt", "r") as f:   # Reading file to check if username and password is correct
+        verify = f.readlines()
+    
+    for lines in verify:
+        username_in_file,password_in_file = lines.strip().split(", ")
+        
+        if username_in_file == username and password_in_file == password:
+            print("Login Successful")
+            return
+    
+    print("Invalid Username or Password!")
+        
+# Giving user options to login or signup
 while True:
     try:
-        choice = input("Type, signup, login, data, exit:" ).lower()
+        choice = input("Type, signup, login, data, exit: " ).lower()
     
         if choice == "signup":
             signup()
             
         elif choice == "login":
             login()
-        elif choice == 'data':
-            print(f"Entered date (Username,Password): {user}")
 
         elif choice == "exit":
             print("Thanks for using!")
             break
-        else:
-            print("Invalid option!")
 
-    except Exception as e:
-        print(f"An error occured {e}")
-
-    print(user)
-
+    except KeyError as e:
+        print(f"You selected invalid option!")
